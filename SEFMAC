@@ -1,0 +1,183 @@
+#!/bin/bash
+
+
+################################################
+# SEFMAC IS SISTEMA DE EVACION DE FILTRADO MAC #
+################################################
+
+#version
+version="1.0 beta"
+#colores
+blanco="\033[1;37m"
+gris="\033[0;37m"
+magenta="\033[0;35m"
+rojo="\033[1;31m"
+verde="\033[1;32m"
+amarillo="\033[1;33m"
+azul="\033[1;34m"
+cian="\033[0;36m"
+
+echo "" 
+	sleep 0.1 && echo -e $cian "             ______  ______ ______"$azul" __      __ ______ ______ "                     
+	sleep 0.1 && echo -e $cian "            /  ____\/  ____|  ____"$azul"|  \    /  |  __  |  ____|"                     
+	sleep 0.1 && echo -e $cian "              | ___ | |__  | |__  "$azul"|   \  /   | |  | | |     "
+	sleep 0.1 && echo -e $cian "            \____  \|  __| |  __| "$azul"| |\ \/ /| | |__| | |     "
+	sleep 0.1 && echo -e $cian "            _____|  | |____| |    "$azul"| | \__/ | |  __  | |____ "
+	sleep 0.1 && echo -e $cian "            \______/\______|_|    "$azul"|_|      |_|_|  |_|______|"
+	sleep 0.1 && echo ""
+	sleep 0.1 && echo -e $gris "                          __  __           __  "
+	sleep 0.1 && echo -e $gris "                         / / / /___ ______/ /__"
+	sleep 0.1 && echo -e $gris "                        / /_/ / __  / ___/ //_/"
+	sleep 0.1 && echo -e $gris "                       / __  / /_/ / /__/ ,<   "
+	sleep 0.1 && echo -e $gris "                      /_/ /_/\__,_/\___/_/|_|  " 
+	sleep 0.1 && echo ""
+	sleep 0.1 && echo ""
+	sleep 1
+	echo -e $rojo"                SEFMAC "$blanco"Version: "$version $magenta"By: "$gris"CarlosGrillet" 
+	sleep 1
+	sleep 1
+	echo ""
+	echo ""
+	echo ""
+	echo ""
+	
+	
+	#Comprovacion de las dependencias
+function checkdependences {
+	
+	echo -ne "Macchanger....."
+	if ! hash macchanger 2>/dev/null; then
+		echo -e "\e[1;31mNot installed"$rescolor""
+		salir=1
+	else
+		echo -e "\e[1;32mOK!"$rescolor""
+	fi
+	sleep 0.5
+	
+	
+	echo -ne $gris"ifconfig......."
+	if ! hash ifconfig 2>/dev/null; then
+		echo -e "\e[1;31mNot installed"$rescolor""
+		salir=1
+	else
+		echo -e "\e[1;32mOK!"$rescolor""
+	fi
+	sleep 0.5
+	
+	echo -ne $gris"iwconfig......."
+	if ! hash iwconfig 2>/dev/null; then
+		echo -e "\e[1;31mNot installed"$rescolor""
+		salir=1
+	else
+		echo -e "\e[1;32mOK!"$rescolor""
+	fi
+	sleep 0.5
+	
+	echo -ne $gris"iwlist........."
+	if ! hash iwlist 2>/dev/null; then
+		echo -e "\e[1;31mNot installed"$rescolor""
+		salir=1
+	else
+		echo -e "\e[1;32mOK!"$rescolor""
+	fi
+	sleep 0.5
+	
+	if [ "$salir" = "1" ]; then
+	exit 1
+	fi
+	
+	sleep 1
+	clear
+	
+	}
+
+checkdependences
+
+
+	#seleccion del metodo 1
+function changemac {
+
+	echo ""
+	echo -e $cian"Apagando intefaz..."
+	ifconfig wlan0 down
+	sleep 0.5
+	echo -e $verde"Cambiando la direccion MAC"
+	echo -e -n $blanco
+	macchanger -r wlan0
+	sleep 0.5
+	echo -e $cian"Encendiendo interfaz..."
+	ifconfig wlan0 up
+	sleep 0.5
+	echo ""
+	echo -e $verde"Listo..."$cian" Cambio de MAC excitoso."
+	echo ""
+	echo ""
+	echo -e -n $verde"Pulsa enter para continuar..."
+	read
+	clear
+	setmetode
+}
+
+	#Seleccion del metodo 2
+function changemactimer {
+
+	echo ""
+	echo -e $verde"Tiempo de ciclo"$magenta" en segundos:"
+	echo -n -e $azul":>"$blanco
+	read t
+	
+	while true; do
+		echo ""
+		echo -e $cian"Apagando intefaz..."
+		ifconfig wlan0 down
+		sleep 0.5
+		echo -e $verde"Cambiando la direccion MAC"
+		echo -e -n $blanco
+		macchanger -r wlan0
+		sleep 0.5
+		echo -e $cian"Encendiendo interfaz..."
+		ifconfig wlan0 up
+		sleep 0.5
+		echo ""
+		echo -e $verde"Listo..."$cian" Espernado el siguiente cambio..."
+		sleep $t
+		echo ""
+		echo ""
+		echo ""
+	done
+	
+}
+
+
+	#Escoge el metodo de ataque
+function setmetode {
+
+	echo -e $azul"         Seleccione el metodo"
+	echo -e ""
+	echo -e $verde"# "$magenta"1"$blanco" cambiar"$cian" MAC"$blanco" aleatoriamente"
+	echo -e $verde"# "$magenta"2"$blanco" cambiar"$cian" MAC"$blanco" aleatoriamente cada cierto tiempo"
+	echo ""
+	echo -n -e $azul":>"$blanco
+	read met
+	
+	if test $met = "1"; then
+		changemac
+	fi
+	
+	if test $met = "2"; then
+		changemactimer
+	fi
+	
+	if (( $met > "2" )); then
+		clear
+		echo -e $rojo"Error"$blanco" vuelva a intentar"
+		sleep 1.5
+		clear
+		setmetode
+	fi
+	
+	
+	
+}
+
+setmetode
