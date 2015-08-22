@@ -1,6 +1,6 @@
 # SEFMAC
 
-SEFMAC ES SISTEMA DE EVACION DE FILTRADO MAC
+SEFMAC ES SISTEMA DE EVASION DE FILTRADO MAC
 
 para ejecutarlo busca la carpeta donde esta el archivo y teclea
 
